@@ -6,10 +6,17 @@ import pymysql
 from user_modules.local_DB import DBref 
 
 class WinAdmin:
-    def __init__(self, dbFile, configFile, addFile):
+    def __init__(
+        self, 
+        dbFile, 
+        configFile, 
+        add_scripts={"create_folder":"", "create_user":"", "set_owner":"","share_folder":""},
+        rm_scripts={"stop_share": "", "remove_user": "", "remove_folder": ""}
+    ):
         self.dbFile = dbFile
         self.configFile = configFile
-        self.addFile = addFile
+        self.add_scripts = add_scripts
+        self.rm_scripts = rm_scripts
 
         self.config = configparser.ConfigParser()
         self.config.read(self.configFile)
@@ -20,8 +27,9 @@ class WinAdmin:
         users = self.db.getUsers()
 
         for user in users:
-            self.makeSQL(user["ws_name"], user["ws_password"])
             self.makeWin(user["ws_name"], user["ws_password"], user["work_dir"])
+            if int(self.config["CONFIG"]["mysql_enabled"]) == 1:
+                self.makeSQL(user["ws_name"], user["ws_password"])
 
     def makeSQL(self, user, password):
         conn = pymysql.connect(
@@ -37,13 +45,41 @@ class WinAdmin:
         cur.execute('''FLUSH PRIVILEGES;''')
 
     def makeWin(self, user, password, folder):
-        call("%s %s %s %s" % (self.addFile, user, password, folder.replace("/", "\\")))
+        sections_count = int(self.config["CONFIG"]["sections_count"])
 
+        call("%s %s %s" % (self.add_scripts["create_user"], user, password))
+
+        for i in range(1, sections_count+1):
+            sharename = "%s-m%d" % (user, i)
+            folderPath = "%s-m%d" % (folder, i)
+            folderPath = folderPath.replace("/", "\\")
+            
+            call("%s %s"       % (self.add_scripts["create_folder"], folderPath)) # create folder
+            call("%s %s %s"    % (self.add_scripts["set_owner"], folderPath, user)) # set owner
+
+    def activateSection(self, section_num):
+        users = self.db.getUsers()
+        sections_count = int(self.config["CONFIG"]["sections_count"])
+
+        for u in users:
+            user = u["ws_name"]
+            folder = u["work_dir"]
+
+            for i in range(1, sections_count+1):
+                sharename = "%s-m%d" % (user, i)
+                folderPath = "%s-m%d" % (folder, i)
+                folderPath = folderPath.replace("/", "\\")
+
+                if i == section_num:
+                    call("%s %s %s %s" % (self.add_scripts["share_folder"], user, folderPath, sharename)) # share folder
+                else:
+                    call("%s %s" % (self.rm_scripts["stop_share"], sharename))
+            
 class Cleaner:
-    def __init__(self, dbFile, configFile, delFile):
+    def __init__(self, dbFile, configFile, scripts={"stop_share": "", "remove_user": "", "remove_folder": ""}):
         self.dbFile = dbFile
         self.configFile = configFile
-        self.delFile = delFile
+        self.scripts = scripts
 
         self.config = configparser.ConfigParser()
         self.config.read(self.configFile)
@@ -54,12 +90,23 @@ class Cleaner:
         users = self.db.getUsers()
         for user in users:
             self.cleanWin(user["ws_name"], user["work_dir"])
-            self.cleanMySQL(user["ws_name"])
+            if int(self.config["CONFIG"]["mysql_enabled"]) == 1:
+                self.cleanMySQL(user["ws_name"])
 
         self.cleanSQLite()
 
     def cleanWin(self, user, folder):
-        call("%s %s %s" % (self.delFile, user, folder.replace("/", "\\")))
+        sections_count = int(self.config["CONFIG"]["sections_count"])
+
+        for i in range(1, sections_count+1):
+            sharename = "%s-m%d" % (user, i)
+            folderPath = "%s-m%d" % (folder, i)
+            folderPath = folderPath.replace("/", "\\")
+
+            call("%s %s" % (self.scripts["stop_share"], sharename)) # stop share
+            call("%s %s" % (self.scripts["remove_folder"], folderPath)) # remove folder
+
+        call("%s %s" % (self.scripts["remove_user"], user)) # remove user
 
     def cleanMySQL(self, user):
         conn = pymysql.connect(

@@ -1,0 +1,4 @@
+1. rename clear to erase (or drop)
+2. add clear button (clear folder, clear db)
+3. add admin frontend
+4. add user fronend

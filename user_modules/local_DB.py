@@ -29,7 +29,7 @@ class DBref():
         )
         
     def generatePass(self):
-        letters = string.ascii_lowercase + "0123456789-#@!?"
+        letters = "abcdefghjklmnopqrstuvwxyz023456789-#@!?"
         return "".join(random.choice(letters) for i in range(8))
 
     def saveUsersFromList(self, userlist, web_directory):
