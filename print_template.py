@@ -51,20 +51,27 @@ class PrintTemplate:
         | Пароль:                                     |
         | {2} |
         |                                             |
-        | web-адрес:                                  |
+        | web-адреса:                                 |
         | {3} |
-        |                                             |
-        | Рабочая папка:                              |
         | {4} |
-        |                                             |
-        | phpMyAdmin:                                 |
         | {5} |
+        |                                             |
+        | Рабочие папки:                              |
+        | {6} |
+        | {7} |
+        | {8} |
+        | {9} |
+        |                                             |
         #---------------------------------------------#
         '''.format(
             realname.ljust(lj, " "),
             wpLogin.ljust(lj, " "),
             wpPass.ljust(lj, " "),
-            (webAddress + "/" + wpLogin).ljust(lj, " "),
-            (folderAddress + "\\" + wpLogin).ljust(lj, " "),
-            (webAddress + "/phpMyAdmin").ljust(lj, " ")
+            (webAddress + "/" + wpLogin + "-m2").ljust(lj, " "),
+            (webAddress + "/" + wpLogin + "-m3").ljust(lj, " "),
+            (webAddress + "/" + wpLogin + "-m4").ljust(lj, " "),
+            (folderAddress + "\\" + wpLogin + "-m1").ljust(lj, " "),
+            (folderAddress + "\\" + wpLogin + "-m2").ljust(lj, " "),
+            (folderAddress + "\\" + wpLogin + "-m3").ljust(lj, " "),
+            (folderAddress + "\\" + wpLogin + "-m4").ljust(lj, " "),
         )

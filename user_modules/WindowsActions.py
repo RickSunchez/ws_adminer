@@ -10,7 +10,7 @@ class WinAdmin:
         self, 
         dbFile, 
         configFile, 
-        add_scripts={"create_folder":"", "create_user":"", "set_owner":"","share_folder":""},
+        add_scripts={"create_folder":"", "create_user":"", "set_owner":"","share_folder":"", "make_readonly": ""},
         rm_scripts={"stop_share": "", "remove_user": "", "remove_folder": ""}
     ):
         self.dbFile = dbFile
@@ -72,8 +72,10 @@ class WinAdmin:
 
                 if i == section_num:
                     call("%s %s %s %s" % (self.add_scripts["share_folder"], user, folderPath, sharename)) # share folder
+                    call("%s %s %s"    % (self.add_scripts["set_owner"], folderPath, user)) # set owner
                 else:
-                    call("%s %s" % (self.rm_scripts["stop_share"], sharename))
+                    # call("%s %s" % (self.rm_scripts["stop_share"], sharename))
+                    call("%s %s %s %s" % (self.add_scripts["make_readonly"], user, folderPath, sharename)) # readonly folder
             
 class Cleaner:
     def __init__(self, dbFile, configFile, scripts={"stop_share": "", "remove_user": "", "remove_folder": ""}):

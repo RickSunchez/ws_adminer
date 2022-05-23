@@ -14,7 +14,8 @@ CREATE_SCRIPTS = {
     "create_folder": DIR + "\\scripts\\00_create_folder.bat", 
     "create_user":   DIR + "\\scripts\\01_create_user.bat", 
     "set_owner":     DIR + "\\scripts\\02_set_folder_owner.bat",
-    "share_folder":  DIR + "\\scripts\\03_share_folder.bat"
+    "share_folder":  DIR + "\\scripts\\03_share_folder.bat",
+    "make_readonly": DIR + "\\scripts\\50_share_read_only.bat"
 }
 
 REMOVE_SCRIPTS = {
