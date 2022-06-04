@@ -58,15 +58,12 @@ class ConfigDialog(object):
         self.webFolder["text"] = tkfd.askdirectory(title="Открыть папку")
 
     def close(self):
-        self.config["CONFIG"] = {
-            "SERVER_ROOT": self.webFolder["text"],
-            "MYSQL_HOST": self.mysqlHost.get(),
-            "MYSQL_USER": self.mysqlUser.get(),
-            "MYSQL_PASSWORD": self.mysqlPass.get(), 
-        }
+        self.config["CONFIG"]["server_root"] = self.webFolder["text"]
+        self.config["CONFIG"]["mysql_host"] = self.mysqlHost.get()
+        self.config["CONFIG"]["mysql_user"] = self.mysqlUser.get()
+        self.config["CONFIG"]["mysql_password"] = self.mysqlPass.get()
 
-        with open(self.configFile, "w") as cfg:
-                self.config.write(cfg)
+        with open(self.configFile, "w") as cfg: self.config.write(cfg)
 
         self.tl.destroy()
 
@@ -127,7 +124,7 @@ class UserDialog(object):
             config = configparser.ConfigParser()
             config.read(self.configFile)
 
-            self.db.saveUsersFromList(self.users, config["CONFIG"]["SERVER_ROOT"])
+            self.db.saveUsersFromList(self.users, config["CONFIG"]["server_root"])
 
         self.tl.destroy()
 

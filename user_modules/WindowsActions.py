@@ -28,6 +28,7 @@ class WinAdmin:
 
         for user in users:
             self.makeWin(user["ws_name"], user["ws_password"], user["work_dir"])
+            
             if int(self.config["CONFIG"]["mysql_enabled"]) == 1:
                 self.makeSQL(user["ws_name"], user["ws_password"])
 

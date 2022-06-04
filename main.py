@@ -24,6 +24,16 @@ REMOVE_SCRIPTS = {
     "remove_folder": DIR + "\\scripts\\93_remove_folder.bat"
 }
 
+CONFIG_DEFAULT = {
+    "active_section": 0,
+    "sections_count": 4,
+    "mysql_enabled": 0,
+    "server_root": "",
+    "mysql_host": "",
+    "mysql_user": "",
+    "mysql_password": "",
+}
+
 CFG_FILE = DIR + "\\data\\config.cfg"
 DB_FILE  = DIR + "\\data\\usersDB.db"
 
@@ -65,6 +75,17 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read(CFG_FILE)
+
+if "CONFIG" not in config:
+    config["CONFIG"] = CONFIG_DEFAULT
+
+    with open(CFG_FILE, "w") as cfg: config.write(cfg)
+else:
+    for key in CONFIG_DEFAULT:
+        if key not in config["CONFIG"]:
+            config["CONFIG"][key] = CONFIG_DEFAULT[key]
+
+    with open(CFG_FILE, "w") as cfg: config.write(cfg)
 
 def decreaseSession():
     active = int(config["CONFIG"]["active_section"])
